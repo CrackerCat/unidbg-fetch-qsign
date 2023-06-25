@@ -65,7 +65,7 @@ class Handler(
 open class PacketHandler {
     private val handlers = ConcurrentLinkedQueue<Handler>()
 
-    fun register(cmd: String, seq: Int): Handler? {
+    fun register(cmd: String, seq: Int): Handler {
         return this.register((cmd + seq).hashCode())
     }
 
