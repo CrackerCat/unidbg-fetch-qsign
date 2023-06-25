@@ -5,17 +5,18 @@ import io.ktor.network.selector.*
 import io.ktor.network.sockets.*
 import io.ktor.utils.io.*
 import kotlinx.coroutines.*
+import moe.fuqiuluo.utils.EMPTY_BYTE_ARRAY
 import java.util.concurrent.atomic.AtomicInteger
 
 data class SsoPacket(
     val cmd: String,
-    val seq: Int,
-    val data: ByteArray
+    var seq: Int = 0,
+    val data: ByteArray = EMPTY_BYTE_ARRAY
 )
 
 class SimpleClient(
     private val host: String,
-    private val port: Int
+    private val port: Int,
 ): PacketHandler() {
     private val selectorManager = SelectorManager(Dispatchers.IO)
     private lateinit var socket: Socket
@@ -34,7 +35,7 @@ class SimpleClient(
 
     fun initConnection() {
         this.readChannel = socket.openReadChannel()
-        this.writeChannel = socket.openWriteChannel()
+        this.writeChannel = socket.openWriteChannel(true)
 
         GlobalScope.launch(Dispatchers.IO) {
             while (true) {
@@ -50,6 +51,11 @@ class SimpleClient(
     }
 
     fun sendPacket(packet: SsoPacket) {
-
+        if (packet.seq == 0) {
+            packet.seq = this.seq.incrementAndGet()
+        }
+        GlobalScope.launch {
+            writeChannel.encode(ssoPacket = packet)
+        }
     }
 }
