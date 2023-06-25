@@ -16,8 +16,17 @@ fun main(args: Array<String>) {
             .toInt(1 .. 65535) { "Port is out of range." }
     }
 
+    方法 {
+
+    }
+
     embeddedServer(Netty, port = port, module = Application::init)
         .start(wait = true)
+}
+
+
+fun <T> 方法(block: () -> T) {
+
 }
 
 fun Application.init() {

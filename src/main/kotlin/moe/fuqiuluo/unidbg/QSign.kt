@@ -1,9 +1,9 @@
 package moe.fuqiuluo.unidbg
 
-import moe.fuqiuluo.net.SimpleOicq
+import moe.fuqiuluo.net.SimpleClient
 
 class QSign {
-    val oicq = SimpleOicq("msfwifi.3g.qq.com", 8080)
+    val oicq = SimpleClient("msfwifi.3g.qq.com", 8080)
 
 
 }
