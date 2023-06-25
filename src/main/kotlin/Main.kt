@@ -1,4 +1,5 @@
 import ch.qos.logback.classic.Logger
+import com.tencent.crypt.Crypt
 import io.ktor.server.application.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
@@ -20,9 +21,7 @@ fun main(args: Array<String>) {
 }
 
 fun Application.init() {
-
     routing {
         configIndex()
-
     }
 }

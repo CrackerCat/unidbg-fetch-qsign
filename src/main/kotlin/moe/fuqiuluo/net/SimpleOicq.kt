@@ -3,15 +3,23 @@ package moe.fuqiuluo.net
 import java.io.DataInputStream
 import java.io.DataOutputStream
 import java.net.Socket
+import java.util.concurrent.atomic.AtomicInteger
+
+data class SsoPacket(
+    val cmd: String,
+    val seq: Int,
+    val data: ByteArray
+)
 
 class SimpleOicq(
     val host: String,
     val port: Int
 ) {
-
     lateinit var socket: Socket
     lateinit var input: DataInputStream
     lateinit var output: DataOutputStream
+
+    private val seq = AtomicInteger(10000)
 
     fun connect(): Boolean {
         this.socket = Socket(host, port)
@@ -27,5 +35,7 @@ class SimpleOicq(
         }
     }
 
+    fun sendPacket(packet: SsoPacket) {
 
+    }
 }
