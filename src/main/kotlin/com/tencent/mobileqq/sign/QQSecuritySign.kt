@@ -43,7 +43,7 @@ object QQSecuritySign {
             .callJniMethod(vm.emulator, "requestToken()V")
     }
 
-    fun getSign(vm: QSecVM, qsec: DvmObject<*>, qua: String, cmd: String, buffer: ByteArray, seq: Int, uin: String): SignResultObject {
+    fun getSign(vm: QSecVM, qua: String, cmd: String, buffer: ByteArray, seq: Int, uin: String, qsec: DvmObject<*> = vm.newInstance("com/tencent/mobileqq/qsec/qsecurity/QSec", unique = true)): SignResultObject {
         return vm.newInstance("com/tencent/mobileqq/sign/QQSecuritySign", unique = true)
             .callJniMethodObject(vm.emulator, "getSign(Lcom/tencent/mobileqq/qsec/qsecurity/QSec;Ljava/lang/String;Ljava/lang/String;[B[BLjava/lang/String;)Lcom/tencent/mobileqq/sign/QQSecuritySign\$SignResult;",
                 qsec, qua, cmd, buffer, BytesUtil.int32ToBuf(seq), uin) as SignResultObject

@@ -19,8 +19,11 @@ object ChannelManager {
     }
 
     fun onNativeReceive(vm: QSecVM, cmd: String, data: ByteArray, callbackId: Long) {
+        while ("onNativeReceive" in vm.global) { }
+        vm.global["onNativeReceive"] = true
         vm.newInstance("com/tencent/mobileqq/channel/ChannelManager", unique = true)
             .callJniMethod(vm.emulator, "onNativeReceive(Ljava/lang/String;[BZJ)V",
                 cmd, data, true, callbackId)
+        vm.global.remove("onNativeReceive")
     }
 }

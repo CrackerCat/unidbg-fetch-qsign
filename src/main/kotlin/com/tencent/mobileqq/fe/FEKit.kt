@@ -28,6 +28,7 @@ object FEKit {
     }
 
     fun changeUin(vm: QSecVM, uin: String) {
+        vm.global["uin"] = uin
         Dtn.initUin(vm, uin)
     }
 }

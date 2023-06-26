@@ -5,6 +5,8 @@ import java.util.concurrent.BlockingQueue
 import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.TimeUnit
 import com.github.unidbg.worker.*
+import moe.fuqiuluo.unidbg.QSecVM
+import moe.fuqiuluo.unidbg.QSecVMWorker
 import java.util.*
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicInteger
@@ -117,4 +119,10 @@ class FixedWorkPool(
         this.stopped = true
         closeWorkers(this.workers)
     }
+}
+
+fun FixedWorkPool.work(block: QSecVM.() -> Unit) {
+    val worker = borrow<QSecVMWorker>(5000, TimeUnit.MILLISECONDS) ?: return
+    worker.work(block)
+    release(worker)
 }

@@ -7,9 +7,11 @@ class GlobalData {
         return cacheMap[key]
     }
 
-    operator fun set(key: String, any: Any) {
+    operator fun set(key: String, any: Any?) {
         cacheMap[key] = any
     }
+
+    fun remove(key: String) = cacheMap.remove(key)
 
     operator fun contains(key: String) = key in cacheMap
 }

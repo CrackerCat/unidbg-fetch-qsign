@@ -16,7 +16,7 @@ suspend fun ByteWriteChannel.encode(ssoPacket: SsoPacket) {
             this.writeInt(0 + 4)
             this.writeBytes(EMPTY_BYTE_ARRAY)
             this.writeByte(0)
-            "0".let {
+            ssoPacket.uin.let {
                 this.writeInt(it.length + 4)
                 this.writeString(it)
             }

@@ -8,10 +8,12 @@ import io.ktor.server.routing.*
 import kotlinx.serialization.json.Json
 import moe.fuqiuluo.api.configEnergy
 import moe.fuqiuluo.api.configIndex
+import moe.fuqiuluo.api.configSign
 import moe.fuqiuluo.comm.invoke
 import moe.fuqiuluo.ext.toInt
-import moe.fuqiuluo.unidbg.QSignWorker
+import moe.fuqiuluo.unidbg.QSecVMWorker
 import moe.fuqiuluo.unidbg.pool.FixedWorkPool
+import moe.fuqiuluo.unidbg.pool.work
 import moe.fuqiuluo.unidbg.workerPool
 import org.slf4j.LoggerFactory
 import java.io.File
@@ -23,6 +25,8 @@ import java.io.File
  */
 
 
+const val QQ_VERSION = "8.9.63"
+const val QQ_CODE = "4186"
 const val QUA = "V1_AND_SQ_8.9.63_4188_HDBM_T"
 const val CHANNEL_VERSION = "6.100.248"
 const val ANDROID_ID = "fa88ca2833f243c4"
@@ -53,7 +57,7 @@ fun main(args: Array<String>) {
 
     workerPool = FixedWorkPool(workerCount, {
         logger.info("Try to construct QSignWorker.")
-        QSignWorker(it, coreLibPath).work {
+        QSecVMWorker(it, coreLibPath).work {
             init()
             FEKit.init(this)
         }
@@ -73,5 +77,6 @@ fun Application.init() {
     routing {
         configIndex()
         configEnergy()
+        configSign()
     }
 }

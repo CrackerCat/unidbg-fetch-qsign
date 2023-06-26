@@ -7,12 +7,14 @@ import io.ktor.utils.io.*
 import kotlinx.coroutines.*
 import moe.fuqiuluo.utils.EMPTY_BYTE_ARRAY
 import java.io.Closeable
+import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.atomic.AtomicInteger
 
 data class SsoPacket(
     val cmd: String,
     var seq: Int = 0,
-    val data: ByteArray = EMPTY_BYTE_ARRAY
+    val data: ByteArray = EMPTY_BYTE_ARRAY,
+    val uin: String = "0",
 )
 
 class SimpleClient(
@@ -25,6 +27,7 @@ class SimpleClient(
     private lateinit var readChannel: ByteReadChannel
     private lateinit var writeChannel: ByteWriteChannel
 
+    private val packetList = CopyOnWriteArrayList<SsoPacket>()
     private val seq = AtomicInteger(10000)
 
     suspend fun connect(): Boolean {
@@ -56,6 +59,15 @@ class SimpleClient(
                 }
             }
         }
+        GlobalScope.launch(Dispatchers.IO) {
+            while (true) {
+                packetList.forEach {
+                    writeChannel.encode(it)
+                    packetList.remove(it)
+                }
+                delay(1000)
+            }
+        }
     }
 
     fun sendPacket(packet: SsoPacket) {
@@ -66,9 +78,7 @@ class SimpleClient(
             println("closed channel, failed t send packet")
             return
         }
-        GlobalScope.launch {
-            writeChannel.encode(ssoPacket = packet)
-        }
+        packetList.add(packet)
     }
 
     override fun close() {

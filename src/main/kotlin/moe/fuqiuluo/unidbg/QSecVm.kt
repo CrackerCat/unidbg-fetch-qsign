@@ -19,10 +19,10 @@ import javax.security.auth.Destroyable
 
 lateinit var workerPool: FixedWorkPool
 
-class QSignWorker(pool: WorkerPool, coreLibPath: File): Worker(pool) {
+class QSecVMWorker(pool: WorkerPool, coreLibPath: File): Worker(pool) {
     private val instance: QSecVM = QSecVM(coreLibPath)
 
-    fun work(block: QSecVM.() -> Unit): QSignWorker {
+    fun work(block: QSecVM.() -> Unit): QSecVMWorker {
         block.invoke(instance)
         return this
     }
