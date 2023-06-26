@@ -15,14 +15,20 @@ bash bin/unidbg-fetch-qsign --port=8080  --count=1 --library=txlib\8.9.63
 
 # 使用
 
-### energy api
+### 原始energy
 
 ```http request
-# http://127.0.0.1:8080/energy?salt=[SALT HEX]&data=[DATA]
+# http://127.0.0.1:8080/custom_energy?salt=[SALT HEX]&data=[DATA]
 ```
 
-### sign api
+### sign
 
 ```http request
 # http://127.0.0.1:8080/sign?uin=[UIN]&qua=V1_AND_SQ_8.9.63_4188_HDBM_T&cmd=[CMD]&seq=[SEQ]&buffer=[BUFFER]
+```
+
+### 登录包energy(tlv544)
+
+```http request
+
 ```
