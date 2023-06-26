@@ -1,7 +1,11 @@
+import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
+import io.ktor.server.plugins.contentnegotiation.*
 import io.ktor.server.routing.*
+import kotlinx.serialization.json.Json
+import moe.fuqiuluo.api.configEnergy
 import moe.fuqiuluo.api.configIndex
 import moe.fuqiuluo.comm.invoke
 import moe.fuqiuluo.ext.toInt
@@ -32,12 +36,12 @@ fun main(args: Array<String>) {
         debug = "debug" in it
     }
 
-
     logger.info("Unidbg workerCount: $workerCount")
+    logger.info("Debug enable: $debug")
 
     workerPool = FixedWorkPool(workerCount, {
         logger.info("Try to construct QSignWorker.")
-        QSignWorker(it, coreLibPath).use { init() }
+        QSignWorker(it, coreLibPath).work { init() }
     }, reloadInterval)
 
     embeddedServer(Netty, port = port, module = Application::init)
@@ -45,7 +49,14 @@ fun main(args: Array<String>) {
 }
 
 fun Application.init() {
+    install(ContentNegotiation) {
+        json(Json {
+            prettyPrint = true
+            isLenient = true
+        })
+    }
     routing {
         configIndex()
+        configEnergy()
     }
 }

@@ -1,9 +1,6 @@
 package moe.fuqiuluo.unidbg.env
 
-import com.github.unidbg.linux.android.dvm.AbstractJni
-import com.github.unidbg.linux.android.dvm.BaseVM
-import com.github.unidbg.linux.android.dvm.DvmObject
-import com.github.unidbg.linux.android.dvm.VaList
+import com.github.unidbg.linux.android.dvm.*
 import moe.fuqiuluo.unidbg.vm.GlobalData
 import org.slf4j.LoggerFactory
 
@@ -17,4 +14,18 @@ class QSecJni(val global: GlobalData) : AbstractJni() {
         return super.callIntMethodV(vm, dvmObject, signature, vaList)
     }
 
+    override fun callStaticObjectMethodV(
+        vm: BaseVM,
+        dvmClass: DvmClass,
+        signature: String,
+        vaList: VaList
+    ): DvmObject<*> {
+        if (signature == "com/tencent/mobileqq/dt/app/Dtc->mmKVValue(Ljava/lang/String;)Ljava/lang/String;") {
+            val key = vaList.getObjectArg<StringObject>(0).value
+            if (key == "o3_switch_Xwid") {
+                return StringObject(vm, "1")
+            }
+        }
+        return super.callStaticObjectMethodV(vm, dvmClass, signature, vaList)
+    }
 }

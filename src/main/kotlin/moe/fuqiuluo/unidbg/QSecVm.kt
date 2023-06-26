@@ -20,9 +20,9 @@ import javax.security.auth.Destroyable
 lateinit var workerPool: FixedWorkPool
 
 class QSignWorker(pool: WorkerPool, coreLibPath: File): Worker(pool) {
-    private val instance: QSign = QSign(coreLibPath)
+    private val instance: QSecVM = QSecVM(coreLibPath)
 
-    fun use(block: QSign.() -> Unit): QSignWorker {
+    fun work(block: QSecVM.() -> Unit): QSignWorker {
         block.invoke(instance)
         return this
     }
@@ -32,11 +32,11 @@ class QSignWorker(pool: WorkerPool, coreLibPath: File): Worker(pool) {
     }
 }
 
-class QSign(
+class QSecVM(
     private val coreLibPath: File
 ): Destroyable, AndroidVM("com.tencent.mobileqq") {
     companion object {
-        private val logger = LoggerFactory.getLogger(QSign::class.java)!!
+        private val logger = LoggerFactory.getLogger(QSecVM::class.java)!!
     }
 
     private var destroy: Boolean = false
