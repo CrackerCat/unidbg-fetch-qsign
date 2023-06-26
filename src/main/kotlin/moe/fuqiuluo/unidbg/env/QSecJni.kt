@@ -62,19 +62,20 @@ class QSecJni(
             println("uin = ${global["uin"]}, id = $callbackId, sendPacket(cmd = $cmd, data = ${data.toHexString()})")
 
             if (cmd == "trpc.o3.ecdh_access.EcdhAccess.SsoEstablishShareKey"
-                || cmd == "trpc.o3.report.Report.SsoReport"
+                // || cmd == "trpc.o3.report.Report.SsoReport"
                 //|| cmd == "trpc.o3.ecdh_access.EcdhAccess.SsoSecureA2Access"
                 ) {
                 val seq = client.nextSeq()
                 if (callbackId != (-1).toLong()) client.register(cmd, seq).async(dataListener = object: OnPacketListener {
                     override fun onReceive(from: FromService?) {
                         if (from == null) return
-                        println("Receive Data => size = ${from.body.size}")
+                        println("Receive (${from.commandName}) Data => size = ${from.body.size}")
                         ChannelManager
                             .onNativeReceive(this@QSecJni.vm, from.commandName, from.body, callbackId)
                     }
                 })
                 client.sendPacket(SsoPacket(cmd, seq, data, if ("uin" in global) global["uin"] as String else "0"))
+                //client.sendPacket(SsoPacket(cmd, seq, data, "0"))
             }
             return
         }
@@ -148,7 +149,10 @@ class QSecJni(
         if (signature == "com/tencent/mobileqq/dt/model/FEBound->transform(I[B)[B") {
             val mode = vaList.getIntArg(0)
             val data = vaList.getObjectArg<DvmObject<*>>(1).value as ByteArray
-            return BytesObject(vm, FEBound.transform(mode, data))
+            val result = FEBound.transform(mode, data)
+            if (mode == 1)
+                println("FEBound.transform(${data.toHexString()}) => ${result?.toHexString()}")
+            return BytesObject(vm, result)
         }
         if (signature == "java/lang/ClassLoader->getSystemClassLoader()Ljava/lang/ClassLoader;") {
             return vm.resolveClass("java/lang/ClassLoader")
