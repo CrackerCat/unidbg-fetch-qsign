@@ -50,7 +50,7 @@ class QSecVM(
             val resolver = FileResolver(23)
             memory.setLibraryResolver(resolver)
             emulator.syscallHandler.addIOResolver(resolver)
-            vm.setJni(QSecJni(global))
+            vm.setJni(QSecJni(this, client, global))
         }.onFailure {
             it.printStackTrace()
         }

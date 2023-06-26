@@ -34,6 +34,10 @@ class SimpleClient(
         return this.socket.isActive
     }
 
+    fun nextSeq(): Int {
+        return this.seq.incrementAndGet()
+    }
+
     fun initConnection() {
         if (!this.socket.isActive) return
 
@@ -41,11 +45,12 @@ class SimpleClient(
         this.writeChannel = socket.openWriteChannel(true)
 
         GlobalScope.launch(Dispatchers.IO) {
-            while (readChannel.isClosedForRead) {
+            while (!readChannel.isClosedForRead) {
                 val length = readChannel.readInt() - 4
                 if (length > 10 * 1024 * 1024 || length <= 0) error(
                     "the length header of the package must be between 0~10M bytes. data length:" + Integer.toHexString(length)
                 )
+                //println("Receive")
                 readChannel.decode(length) {
                     this@SimpleClient(it)
                 }
@@ -57,7 +62,10 @@ class SimpleClient(
         if (packet.seq == 0) {
             packet.seq = this.seq.incrementAndGet()
         }
-        if (writeChannel.isClosedForWrite) return
+        if (writeChannel.isClosedForWrite) {
+            println("closed channel, failed t send packet")
+            return
+        }
         GlobalScope.launch {
             writeChannel.encode(ssoPacket = packet)
         }

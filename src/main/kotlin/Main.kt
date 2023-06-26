@@ -1,3 +1,4 @@
+import com.tencent.mobileqq.fe.FEKit
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.*
 import io.ktor.server.engine.*
@@ -14,6 +15,17 @@ import moe.fuqiuluo.unidbg.pool.FixedWorkPool
 import moe.fuqiuluo.unidbg.workerPool
 import org.slf4j.LoggerFactory
 import java.io.File
+
+/*
+ * 8.9.63:
+ * QUA = V1_AND_SQ_8.9.63_4188_HDBM_T
+ * version = 6.100.248
+ */
+
+
+const val QUA = "V1_AND_SQ_8.9.63_4188_HDBM_T"
+const val CHANNEL_VERSION = "6.100.248"
+const val ANDROID_ID = "fa88ca2833f243c4"
 
 private val logger = LoggerFactory.getLogger(Main::class.java)
 var debug: Boolean = false // 调试模式
@@ -41,7 +53,10 @@ fun main(args: Array<String>) {
 
     workerPool = FixedWorkPool(workerCount, {
         logger.info("Try to construct QSignWorker.")
-        QSignWorker(it, coreLibPath).work { init() }
+        QSignWorker(it, coreLibPath).work {
+            init()
+            FEKit.init(this)
+        }
     }, reloadInterval)
 
     embeddedServer(Netty, port = port, module = Application::init)

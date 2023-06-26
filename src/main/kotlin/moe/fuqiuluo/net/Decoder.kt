@@ -51,8 +51,9 @@ data class FromService(
 
 suspend fun ByteReadChannel.decode(length: Int, callback: (FromService) -> Unit) {
     require(length > 0)
-    val buf = ByteBuffer.allocateDirect(length)
+    val buf = ByteBuffer.allocate(length)
     this.readFully(buf)
+    //println("Receive ${buf.array().toHexString()}")
     buf.array().decodePacket(callback)
 }
 
@@ -66,7 +67,7 @@ private data class PacketState(
 
 private fun ByteArray.decodePacket(callback: (FromService) -> Unit) { reader {
     if (readInt() == 20140601) return // MSF PING
-    val cipherType = readInt()
+    val cipherType = readByte().toInt()
     if (cipherType == 0) return // HEARTBEAT
     discardExact(1)
     val uin = readString(readInt() - 4)
