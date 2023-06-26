@@ -5,6 +5,7 @@ import QQ_CODE
 import QQ_VERSION
 import com.github.unidbg.linux.android.dvm.*
 import com.tencent.mobileqq.channel.ChannelManager
+import com.tencent.mobileqq.dt.model.FEBound
 import com.tencent.mobileqq.qsec.qsecurity.DeepSleepDetector
 import com.tencent.mobileqq.sign.QQSecuritySign
 import moe.fuqiuluo.ext.toHexString
@@ -15,7 +16,6 @@ import moe.fuqiuluo.net.SsoPacket
 import moe.fuqiuluo.unidbg.QSecVM
 import moe.fuqiuluo.unidbg.ext.BytesObject
 import moe.fuqiuluo.unidbg.vm.GlobalData
-import moe.xinrao.unidbg.env.FEBound
 import org.slf4j.LoggerFactory
 import java.io.File
 import java.util.*
