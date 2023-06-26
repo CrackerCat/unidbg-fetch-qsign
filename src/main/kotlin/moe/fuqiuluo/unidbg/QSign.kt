@@ -1,24 +1,26 @@
 @file:OptIn(DelicateCoroutinesApi::class)
 package moe.fuqiuluo.unidbg
 
+import com.github.unidbg.linux.android.dvm.DvmObject
 import com.github.unidbg.worker.Worker
 import com.github.unidbg.worker.WorkerPool
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import moe.fuqiuluo.net.SimpleClient
+import moe.fuqiuluo.unidbg.env.FileResolver
 import moe.fuqiuluo.unidbg.env.QSecJni
-import moe.fuqiuluo.unidbg.env.QSecModule
 import moe.fuqiuluo.unidbg.pool.FixedWorkPool
 import moe.fuqiuluo.unidbg.vm.AndroidVM
+import moe.fuqiuluo.unidbg.vm.GlobalData
 import org.slf4j.LoggerFactory
 import java.io.File
 import javax.security.auth.Destroyable
 
 lateinit var workerPool: FixedWorkPool
 
-class QSignWorker(pool: WorkerPool, coreLib: File): Worker(pool) {
-    private val instance: QSign = QSign(coreLib)
+class QSignWorker(pool: WorkerPool, coreLibPath: File): Worker(pool) {
+    private val instance: QSign = QSign(coreLibPath)
 
     fun use(block: QSign.() -> Unit): QSignWorker {
         block.invoke(instance)
@@ -31,31 +33,54 @@ class QSignWorker(pool: WorkerPool, coreLib: File): Worker(pool) {
 }
 
 class QSign(
-    private val coreLib: File
-): Destroyable, AndroidVM() {
+    private val coreLibPath: File
+): Destroyable, AndroidVM("com.tencent.mobileqq") {
     companion object {
         private val logger = LoggerFactory.getLogger(QSign::class.java)!!
     }
 
     private var destroy: Boolean = false
+    private var isInit: Boolean = false
+    val global = GlobalData()
     private val client = SimpleClient("msfwifi.3g.qq.com", 8080)
 
     init {
-        QSecModule(emulator, vm).register(memory)
-        vm.setJni(QSecJni())
+        //QSecModule(emulator, vm).register(memory)
+        runCatching {
+            val resolver = FileResolver(23)
+            memory.setLibraryResolver(resolver)
+            emulator.syscallHandler.addIOResolver(resolver)
+            vm.setJni(QSecJni(global))
+        }.onFailure {
+            it.printStackTrace()
+        }
     }
 
     fun init() {
+        if (isInit) return
         runCatching {
             GlobalScope.launch {
                 client.connect()
                 client.initConnection()
             }
-            loadLibrary(coreLib)
+            loadLibrary(coreLibPath.resolve("libQSec.so"))
+            loadLibrary(coreLibPath.resolve("libfekit.so"))
+            this.isInit = true
         }.onFailure {
             logger.error("Failed to init QSign: $it")
             it.printStackTrace()
         }
+    }
+
+    fun newInstance(name: String, value: Any? = null, unique: Boolean = false): DvmObject<*> {
+        if (unique && name in global) {
+            return global[name] as DvmObject<*>
+        }
+        val obj = findClass(name).newObject(value)
+        if (unique) {
+            global[name] = obj
+        }
+        return obj
     }
 
     override fun isDestroyed(): Boolean = destroy
