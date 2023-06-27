@@ -47,7 +47,7 @@ fun main(args: Array<String>) {
             .toInt(1 .. 100) { "workerCount is out of range." }
         coreLibPath = File(it["library", "Lack of libfekit.so path."])
         if (!coreLibPath.exists() || !coreLibPath.isDirectory) {
-            error("libfekit.so file is illegal.")
+            error("libfekit.so file is illegal. Your path must include libfekit.so and libQSec.so!")
         }
         debug = "debug" in it
     }
