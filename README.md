@@ -2,6 +2,8 @@
 
 获取QQSign参数通过Unidbg，开放HTTP API。unidbg-fetch-sign最低从QQ8.9.33（不囊括）开始支持，TIM不支持。
 
+> 多人使用请提高count值以提高并发量！！！
+
 # 部署方法
 
 ## Jar部署
