@@ -75,11 +75,9 @@ class FileResolver(
             ))
         }
 
-        if (path == "/proc/stat/cmdline") {
-            return FileResult.failed(UnixEmulator.ENOTDIR)
-        }
-
-        if (path == "/proc/${emulator.pid}/cmdline") {
+        if (path == "/proc/${emulator.pid}/cmdline"
+            || path == "/proc/stat/cmdline" // an error case
+            ) {
             return FileResult.success(ByteArrayFileIO(oflags, path, "com.tencent.mobileqq:MSF".toByteArray()))
         }
 

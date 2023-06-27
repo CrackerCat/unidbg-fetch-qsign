@@ -22,7 +22,7 @@ bash bin/unidbg-fetch-qsign --port=8080  --count=1 --library=txlib\8.9.63 --andr
 > --library=`/home/your_dir`
 
  - --port=你的端口
- - --count=unidbg实例数量
+ - --count=unidbg实例数量 (建议等于核心数*2) 【数值越大并发能力越强，内存占用越大】
  - --library=存放核心so文件的文件夹绝对路径
 
 ## Dokcer部署
