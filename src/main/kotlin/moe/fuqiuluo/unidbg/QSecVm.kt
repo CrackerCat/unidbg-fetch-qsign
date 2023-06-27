@@ -33,7 +33,7 @@ class QSecVMWorker(pool: WorkerPool, coreLibPath: File): Worker(pool) {
 }
 
 class QSecVM(
-    private val coreLibPath: File
+    val coreLibPath: File
 ): Destroyable, AndroidVM("com.tencent.mobileqq") {
     companion object {
         private val logger = LoggerFactory.getLogger(QSecVM::class.java)!!
@@ -47,7 +47,7 @@ class QSecVM(
     init {
         //QSecModule(emulator, vm).register(memory)
         runCatching {
-            val resolver = FileResolver(23)
+            val resolver = FileResolver(23, this@QSecVM)
             memory.setLibraryResolver(resolver)
             emulator.syscallHandler.addIOResolver(resolver)
             vm.setJni(QSecJni(this, client, global))

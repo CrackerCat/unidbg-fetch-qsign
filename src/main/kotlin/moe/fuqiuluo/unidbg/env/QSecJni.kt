@@ -14,13 +14,14 @@ import moe.fuqiuluo.net.OnPacketListener
 import moe.fuqiuluo.net.SimpleClient
 import moe.fuqiuluo.net.SsoPacket
 import moe.fuqiuluo.unidbg.QSecVM
-import moe.fuqiuluo.unidbg.ext.BytesObject
 import moe.fuqiuluo.unidbg.vm.GlobalData
 import org.slf4j.LoggerFactory
 import java.io.File
 import java.util.*
 
 private val logger = LoggerFactory.getLogger(QSecJni::class.java)
+
+typealias BytesObject = com.github.unidbg.linux.android.dvm.array.ByteArray
 
 class QSecJni(
     val vm: QSecVM,
