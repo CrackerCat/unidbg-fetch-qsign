@@ -69,7 +69,7 @@ class QSecJni(
                 if (callbackId != (-1).toLong()) client.register(cmd, seq).async(dataListener = object: OnPacketListener {
                     override fun onReceive(from: FromService?) {
                         if (from == null) return
-                        println("Receive (${from.commandName}) Data => size = ${from.body.size}")
+                        println("Receive (${from.commandName}) Data => size = ${from.body.size} data: ${from.body.toHexString()}")
                         ChannelManager
                             .onNativeReceive(this@QSecJni.vm, from.commandName, from.body, callbackId)
                     }

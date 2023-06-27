@@ -51,10 +51,9 @@ data class FromService(
 
 suspend fun ByteReadChannel.decode(length: Int, callback: (FromService) -> Unit) {
     require(length > 0)
-    val buf = ByteBuffer.allocate(length)
-    this.readFully(buf)
+    val buf = ByteArray(length).also { this.readFully(it, 0, length) }
     //println("Receive ${buf.array().toHexString()}")
-    buf.array().decodePacket(callback)
+    buf.decodePacket(callback)
 }
 
 private data class PacketState(
