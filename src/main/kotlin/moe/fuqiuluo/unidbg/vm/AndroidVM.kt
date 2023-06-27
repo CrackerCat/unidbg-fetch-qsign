@@ -20,7 +20,8 @@ open class AndroidVM(packageName: String): Closeable {
         .setProcessName(packageName)
         .addBackendFactory(DynarmicFactory(true))
         .addBackendFactory(KvmFactory(true))
-        .addBackendFactory(HypervisorFactory(true))
+        // 修复Linux arm设备，不支持的问题
+        //.addBackendFactory(HypervisorFactory(true))
         .build()!!
     protected val memory = emulator.memory!!
     internal val vm = emulator.createDalvikVM()!!
