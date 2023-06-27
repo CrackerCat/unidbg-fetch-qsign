@@ -60,10 +60,10 @@ fun main(args: Array<String>) {
 
     workerPool = FixedWorkPool(workerCount, {
         logger.info("Try to construct QSignWorker.")
-        QSecVMWorker(it, coreLibPath).work {
+        QSecVMWorker(it, coreLibPath).apply { work {
             init()
             FEKit.init(this)
-        }
+        } }
     }, reloadInterval)
 
     embeddedServer(Netty, port = port, module = Application::init)

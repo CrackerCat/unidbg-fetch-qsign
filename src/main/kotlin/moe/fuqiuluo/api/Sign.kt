@@ -34,22 +34,25 @@ fun Routing.configSign() {
         val buffer = (fetchGet("buffer", err = "lack of buffer") ?: return@get).hex2ByteArray()
         val qimei36 = fetchGet("qimei36")
 
-        lateinit var sign: QQSecuritySign.SignResult
         var o3did = ""
-
-        workerPool.work {
+        val sign = workerPool.work {
             global["qimei36"] = qimei36
             FEKit.changeUin(this, uin)
-            sign = QQSecuritySign.getSign(this, qua, cmd, buffer, seq, uin).value
+            val sign = QQSecuritySign.getSign(this, qua, cmd, buffer, seq, uin).value
             o3did = global["o3did"] as? String ?: ""
+            return@work sign
         }
 
-        call.respond(APIResult(0, "", Sign(
-            sign.token.toHexString(),
-            sign.extra.toHexString(),
-            sign.sign.toHexString(),
-            o3did
-        )))
+        if (sign == null) {
+            call.respond(APIResult(-1, "The instance is occupied and there are no idle instances", null))
+        } else {
+            call.respond(APIResult(0, "", Sign(
+                sign.token.toHexString(),
+                sign.extra.toHexString(),
+                sign.sign.toHexString(),
+                o3did
+            )))
+        }
     }
 
     post("/sign") {
@@ -62,20 +65,24 @@ fun Routing.configSign() {
         val buffer = (fetchPost(parameters, "buffer", err = "lack of buffer") ?: return@post).hex2ByteArray()
         val qimei36 = fetchPost(parameters, "qimei36")
 
-        lateinit var sign: QQSecuritySign.SignResult
         var o3did = ""
-
-        workerPool.work {
+        val sign = workerPool.work {
             global["qimei36"] = qimei36
             FEKit.changeUin(this, uin)
-            sign = QQSecuritySign.getSign(this, qua, cmd, buffer, seq, uin).value
+            val sign = QQSecuritySign.getSign(this, qua, cmd, buffer, seq, uin).value
             o3did = global["o3did"] as? String ?: ""
+            return@work sign
         }
 
-        call.respond(APIResult(0, "", Sign(
-            sign.token.toHexString(),
-            sign.extra.toHexString(),
-            sign.sign.toHexString(), o3did
-        )))
+        if (sign == null) {
+            call.respond(APIResult(-1, "The instance is occupied and there are no idle instances", null))
+        } else {
+            call.respond(APIResult(0, "", Sign(
+                sign.token.toHexString(),
+                sign.extra.toHexString(),
+                sign.sign.toHexString(),
+                o3did
+            )))
+        }
     }
 }

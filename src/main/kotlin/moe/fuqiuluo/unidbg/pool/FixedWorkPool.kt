@@ -121,8 +121,9 @@ class FixedWorkPool(
     }
 }
 
-fun FixedWorkPool.work(block: QSecVM.() -> Unit) {
-    val worker = borrow<QSecVMWorker>(5000, TimeUnit.MILLISECONDS) ?: return
-    worker.work(block)
+fun <T> FixedWorkPool.work(block: QSecVM.() -> T): T? {
+    val worker = borrow<QSecVMWorker>(5000, TimeUnit.MILLISECONDS) ?: return null
+    val ret = worker.work(block)
     release(worker)
+    return ret
 }

@@ -22,9 +22,8 @@ lateinit var workerPool: FixedWorkPool
 class QSecVMWorker(pool: WorkerPool, coreLibPath: File): Worker(pool) {
     private val instance: QSecVM = QSecVM(coreLibPath)
 
-    fun work(block: QSecVM.() -> Unit): QSecVMWorker {
-        block.invoke(instance)
-        return this
+    fun <T> work(block: QSecVM.() -> T): T {
+        return block.invoke(instance)
     }
 
     override fun destroy() {

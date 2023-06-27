@@ -133,7 +133,7 @@ private fun buildData(ssoPacket: SsoPacket) = newBuilder().apply {
 //        ProtoBuf.encodeToByteArray(SSOReserveField.ReserveFields().also { reserve ->
 //            reserve.flag = 1
 //            reserve.locale_id = 2052
-//            reserve.qimei = "022eefeab5f927507337089f100015717619".toByteArray()
+//            reserve.qimei = "".toByteArray()
 //            reserve.newconn_flag = 0
 //            reserve.uid = ""
 //            reserve.imsi = 0
@@ -150,16 +150,15 @@ private fun buildData(ssoPacket: SsoPacket) = newBuilder().apply {
 //            this.writeBytes(it)
 //        }
 
-        lateinit var sign: QQSecuritySign.SignResult
-        workerPool.work {
-            sign = QQSecuritySign.getSign(this,
+        val sign = workerPool.work {
+            QQSecuritySign.getSign(this,
                 QUA,
                 ssoPacket.cmd,
                 ssoPacket.data,
                 ssoPacket.seq,
                 ssoPacket.uin
             ).value
-        }
+        }!!
 
         // When I get SignResult, the global qimei is not initialized,so that I have to use a empty qimei
         ProtoBuf.encodeToByteArray(SSOReserveField.HeadSign().also { headSign ->

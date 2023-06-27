@@ -19,11 +19,14 @@ fun Routing.configEnergy() {
     get("/custom_energy") {
         val data = fetchGet("data", err = "lack of data") ?: return@get
         val salt = (fetchGet("salt", err = "lack of salt") ?: return@get).hex2ByteArray()
-        lateinit var sign: ByteArray
-        workerPool.work {
-            sign = Dandelion.energy(this, data, salt)
+        val sign = workerPool.work {
+            Dandelion.energy(this, data, salt)
         }
-        call.respond(APIResult(0, "success", sign.toHexString()))
+        if (sign == null) {
+            call.respond(APIResult(-1, "The instance is occupied and there are no idle instances", null))
+        } else {
+            call.respond(APIResult(0, "success", sign.toHexString()))
+        }
     }
 
     get("/energy") {
@@ -103,11 +106,14 @@ fun Routing.configEnergy() {
             }
         }
 
-        lateinit var sign: ByteArray
-        workerPool.work {
-            sign = Dandelion.energy(this, data, salt)
+        val sign = workerPool.work {
+            Dandelion.energy(this, data, salt)
         }
 
-        call.respond(APIResult(0, "success", sign.toHexString()))
+        if (sign == null) {
+            call.respond(APIResult(-1, "The instance is occupied and there are no idle instances", null))
+        } else {
+            call.respond(APIResult(0, "success", sign.toHexString()))
+        }
     }
 }
